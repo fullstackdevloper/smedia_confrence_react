@@ -57,7 +57,7 @@ export default function LoginPage() {
   const classes = useStyles();
   const { signIn, user, isAuthReady } = useAppState();
   const history = useHistory();
-  const location = useLocation<{ from: Location }>();
+  const location = useLocation();
   const [passcode, setPasscode] = useState('');
   const [authError, setAuthError] = useState<Error | null>(null);
 

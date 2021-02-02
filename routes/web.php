@@ -20,3 +20,6 @@ Route::get('/', function () {
 Auth::routes();
 
 Route::get('/home', [App\Http\Controllers\HomeController::class, 'index'])->name('home');
+Route::get('/join', [App\Http\Controllers\JoinController::class, 'index'])->name('join');
+Route::get('/room/{room_id}', [App\Http\Controllers\JoinController::class, 'index'])->name('join');
+Route::get('/token', [App\Http\Controllers\TwilioController::class, 'generatetoken'])->name('token');

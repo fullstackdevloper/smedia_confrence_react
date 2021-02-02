@@ -1,5 +1,5 @@
 import React from 'react';
-import { Redirect, Route, RouteProps } from 'react-router-dom';
+import { Redirect, Route, RouteProps } from 'react-router';
 import { useAppState } from '../../state';
 
 export default function PrivateRoute({ children, ...rest }: RouteProps) {

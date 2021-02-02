@@ -38,9 +38,9 @@ declare module 'twilio-video' {
 
 declare global {
   interface Window {
-    /*visualViewport?: {
+    visualViewport?: {
       scale: number;
-    };*/
+    };
   }
 
   interface MediaDevices {

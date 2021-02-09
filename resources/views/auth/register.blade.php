@@ -10,10 +10,9 @@
                 <div class="card-body">
                     <form method="POST" action="{{ route('register') }}">
                         @csrf
-
+                        <input id="user_timezone" type="hidden" class="form-control" name="timezone" value="">
                         <div class="form-group row">
                             <label for="name" class="col-md-4 col-form-label text-md-right">{{ __('Name') }}</label>
-
                             <div class="col-md-6">
                                 <input id="name" type="text" class="form-control @error('name') is-invalid @enderror" name="name" value="{{ old('name') }}" required autocomplete="name" autofocus>
 
@@ -74,4 +73,7 @@
         </div>
     </div>
 </div>
+<script>
+    document.getElementById("user_timezone").value = Intl.DateTimeFormat().resolvedOptions().timeZone;
+</script>    
 @endsection

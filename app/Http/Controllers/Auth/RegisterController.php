@@ -9,35 +9,33 @@ use Illuminate\Foundation\Auth\RegistersUsers;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Validator;
 
-class RegisterController extends Controller
-{
+class RegisterController extends Controller {
     /*
-    |--------------------------------------------------------------------------
-    | Register Controller
-    |--------------------------------------------------------------------------
-    |
-    | This controller handles the registration of new users as well as their
-    | validation and creation. By default this controller uses a trait to
-    | provide this functionality without requiring any additional code.
-    |
-    */
+      |--------------------------------------------------------------------------
+      | Register Controller
+      |--------------------------------------------------------------------------
+      |
+      | This controller handles the registration of new users as well as their
+      | validation and creation. By default this controller uses a trait to
+      | provide this functionality without requiring any additional code.
+      |
+     */
 
-    use RegistersUsers;
+use RegistersUsers;
 
     /**
      * Where to redirect users after registration.
      *
      * @var string
      */
-    protected $redirectTo = RouteServiceProvider::HOME;
+    protected $redirectTo = RouteServiceProvider::Dashboard;
 
     /**
      * Create a new controller instance.
      *
      * @return void
      */
-    public function __construct()
-    {
+    public function __construct() {
         $this->middleware('guest');
     }
 
@@ -47,8 +45,7 @@ class RegisterController extends Controller
      * @param  array  $data
      * @return \Illuminate\Contracts\Validation\Validator
      */
-    protected function validator(array $data)
-    {
+    protected function validator(array $data) {
         return Validator::make($data, [
             'name' => ['required', 'string', 'max:255'],
             'email' => ['required', 'string', 'email', 'max:255', 'unique:users'],
@@ -62,12 +59,41 @@ class RegisterController extends Controller
      * @param  array  $data
      * @return \App\Models\User
      */
-    protected function create(array $data)
-    {
+    protected function create(array $data) {
         return User::create([
             'name' => $data['name'],
             'email' => $data['email'],
+            'timezone' => $data['timezone'],
+            'personal_meet_id' => $this->generateMettingId(),
             'password' => Hash::make($data['password']),
         ]);
     }
+    
+    /**
+     * generate meeting id for user
+     * 
+     * @return string meeting id
+     */
+    public function generateMettingId() {
+        $number = mt_rand(1000000000, 9999999999); // better than rand()
+        // call the same function if the barcode exists already
+        if ($this->meetingIdExists($number)) {
+            return $this->generateMettingId();
+        }
+
+        // otherwise, it's valid and can be used
+        return $number;
+    }
+    
+    /**
+     * check if meeting id already exist
+     * @param string $number
+     * @return bool
+     */
+    public function meetingIdExists($number) {
+        // query the database and return a boolean
+        // for instance, it might look like this in Laravel
+        return User::wherePersonalMeetId($number)->exists();
+    }
+
 }

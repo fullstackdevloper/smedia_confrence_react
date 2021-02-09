@@ -6,10 +6,13 @@ use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
+use BinaryCabin\LaravelUUID\Traits\HasUUID;
 
 class User extends Authenticatable
 {
-    use HasFactory, Notifiable;
+    use HasFactory, Notifiable, HasUUID;
+    
+    protected $uuidFieldName = 'guid';
 
     /**
      * The attributes that are mass assignable.
@@ -20,6 +23,9 @@ class User extends Authenticatable
         'name',
         'email',
         'password',
+        'personal_meet_id',
+        'phone',
+        'timezone'
     ];
 
     /**

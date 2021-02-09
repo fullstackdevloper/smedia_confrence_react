@@ -36,16 +36,12 @@ function Videoconfrence() {
         <Router>
           <AppStateProvider>
             <Switch>
-              <PrivateRoute exact path="/">
+              <PrivateRoute>
                 <VideoApp />
               </PrivateRoute>
-              <PrivateRoute path="/room/:URLRoomName">
+              <PrivateRoute path="/join/:URLRoomName">
                 <VideoApp />
               </PrivateRoute>
-              <Route path="/login">
-                <LoginPage />
-              </Route>
-              <Redirect to="/" />
             </Switch>
           </AppStateProvider>
         </Router>

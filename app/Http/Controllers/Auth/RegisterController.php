@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Auth;
 use App\Http\Controllers\Controller;
 use App\Providers\RouteServiceProvider;
 use App\Models\User;
+use App\Models\UserMeta;
 use Illuminate\Foundation\Auth\RegistersUsers;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Validator;
@@ -60,13 +61,16 @@ use RegistersUsers;
      * @return \App\Models\User
      */
     protected function create(array $data) {
-        return User::create([
+        $user = User::create([
             'name' => $data['name'],
             'email' => $data['email'],
-            'timezone' => $data['timezone'],
             'personal_meet_id' => $this->generateMettingId(),
             'password' => Hash::make($data['password']),
         ]);
+        //add user meta
+        UserMeta::updateUserMeta($user->id, 'timezone', $data['timezone'] );
+        
+        return $user;
     }
     
     /**

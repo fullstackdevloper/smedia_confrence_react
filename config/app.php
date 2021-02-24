@@ -226,7 +226,9 @@ return [
         'URL' => Illuminate\Support\Facades\URL::class,
         'Validator' => Illuminate\Support\Facades\Validator::class,
         'View' => Illuminate\Support\Facades\View::class,
-
+        'Config' => App\Models\Configurations::class,
+        'DTime' => App\Helpers\DateTimeHelper::class,
+        'Format' => App\Helpers\FormatHelper::class,
     ],
 
 ];

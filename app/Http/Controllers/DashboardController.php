@@ -4,8 +4,11 @@ namespace App\Http\Controllers;
 
 use Auth;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Redirect;
 use App\Providers\meetingServiceProvider;
-use App\Providers\GoogleServiceProvider;
+use App\Helpers\EncryptionHelper;
+use App\Models\Meetings;
+use App\Models\UserMeta;
 
 class DashboardController extends Controller
 {
@@ -43,25 +46,82 @@ class DashboardController extends Controller
     public function create_meeting() {
         return view('dashboard/create_meeting');
     }
-    
+
     public function schedule(Request $request) {
         $input = $request->all();
+
         if($input){
             $meetingService = new meetingServiceProvider();
-            $meetingId = $meetingService->createMeeting($input);
-            if($meetingId) {
-                return redirect('/schedule');
+            $model= $meetingService->getModel();
+            if($model->validate($input)) {
+                $meetingId = $meetingService->createMeeting($input);
+                if($meetingId) {
+                    return redirect('/meetings/'.$meetingId);
+                }
+            }else {
+                return Redirect::back()->withErrors($model->errors())->withInput($input);
             }
         }
         
-        return view('dashboard/schedule');
+        $meetingPassword = EncryptionHelper::createPassword();
+                
+        return view('dashboard/schedule', ['password' => $meetingPassword]);
     }
     
-    public function meetings() {
-        return view('dashboard/meetings');
+    public function meetings(Request $request, $meeting_id = null) {
+        if($meeting_id && is_numeric($meeting_id)) {
+            $meeting = meetingServiceProvider::init()->getMeeting($meeting_id);
+            
+            return view('dashboard/view_meeting', ['meeting' => $meeting]);
+        }
+
+        $meetings = meetingServiceProvider::init()->getUserMeetings($meeting_id);
+        
+        return view('dashboard/meetings', ['meetings' => $meetings, 'filter' => $meeting_id]);
     }
     
-    public function settings () {
+    public function editMeeting(Request $request, $meeting_id = null) {
+        $meeting = meetingServiceProvider::init()->getMeeting($meeting_id);
+        $input = $request->all();
+        $meetingService = new meetingServiceProvider();
+        if(!$meetingService->isHost($meeting)) {
+            abort('403', __("You are not allowed to edit this meeting"));
+        }
+        
+        if($input){
+            $model= $meetingService->getModel();
+            if($model->validate($input)) {
+                $meetingId = $meetingService->updateMeeting($meeting, $input);
+                if($meetingId) {
+                    return redirect('/meetings/'.$meetingId);
+                }
+            }else {
+                return Redirect::back()->withErrors($model->errors())->withInput($input);
+            }
+        }
+        $joinees = implode(",", array_column($meeting->joinee->toArray(), "email_address"));
+        
+        return view('dashboard/edit_meeting', ['meeting' => $meeting, 'joinees' => $joinees]);
+    }
+    
+    public function delete_meeting(Request $request, $meeting_id = null) {
+        $meeting = Meetings::findOrFail($meeting_id);
+        $isDeleted = meetingServiceProvider::init()->deleteMeeting($meeting);
+        
+        return redirect('/meetings');
+    }
+    
+    public function settings (Request $request) {
+        $input = $request->all();
+        if($input) {
+
+            foreach($input['settings'] as $key => $value) {
+                UserMeta::updateUserMeta(Auth::user()->id, $key, $value);
+            }
+            
+            return redirect('/dashboard/settings');
+        }
+        
         return view('dashboard/settings');
     }
 }

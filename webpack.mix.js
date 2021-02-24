@@ -17,7 +17,9 @@ const mix = require('laravel-mix');
 */
 mix
   .js("resources/js/app.js", "public/js")
+  .js("resources/js/admin/admin.js", "public/js/admin")
   .sass("resources/sass/app.scss", "public/css")
+  .less("resources/less/admin.less", 'public/css/admin')
   .webpackConfig({
     module: {
       rules: [

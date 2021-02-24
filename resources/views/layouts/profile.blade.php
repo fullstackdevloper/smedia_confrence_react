@@ -40,7 +40,7 @@
                                         <a href="{{ url('/meetings') }}">Meetings</a>
                                     </li>
                                     <li class="list-group-item d-flex justify-content-between align-items-center flex-wrap">
-                                        <a href="{{ url('/settings') }}">Settings</a>
+                                        <a href="{{ url('/dashboard/settings') }}">Settings</a>
                                     </li>
                                 </ul>
                             </div>

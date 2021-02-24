@@ -73,7 +73,9 @@
         </div>
     </div>
 </div>
+<script src='https://cdnjs.cloudflare.com/ajax/libs/jstimezonedetect/1.0.4/jstz.min.js'></script>
 <script>
-    document.getElementById("user_timezone").value = Intl.DateTimeFormat().resolvedOptions().timeZone;
-</script>    
+  var timezone = jstz.determine();
+  document.getElementById("user_timezone").value = timezone.name();
+</script>  
 @endsection

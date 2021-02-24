@@ -5,6 +5,7 @@ namespace App\Providers;
 use Auth;
 use App\Models\User;
 use App\Helpers\DateTimeHelper;
+use App\Models\Configurations;
 
 class GoogleServiceProvider {
 
@@ -17,13 +18,15 @@ class GoogleServiceProvider {
     private $client;
     private $service;
     private $calendarId;
+    private $application_name;
 
     /**
      * constructor
      */
     public function __construct() {
-        $this->client_id = '471187390110-2e3cj3so0jss35sj8trsnpjk67e9rg3m.apps.googleusercontent.com';
-        $this->client_secret = '8twPIK_nmzr2WRhPxvuombu1';
+        $this->client_id = Configurations::getByKey('google_client_id');
+        $this->client_secret = Configurations::getByKey('google_client_secret');
+        $this->application_name = Configurations::getByKey('site_name');
         $this->calendarId = Auth::user()->calendar_account;
     }
 
@@ -34,7 +37,7 @@ class GoogleServiceProvider {
         if (is_null($this->client)) {
             $this->client = new \Google_Client();
 
-            $this->client->setApplicationName(static::APPLICATION_NAME);
+            $this->client->setApplicationName($this->application_name);
             $this->client->setClientId($this->client_id);
             $this->client->setClientSecret($this->client_secret);
             $this->client->setRedirectUri(url('/dashboard'));
@@ -130,33 +133,61 @@ class GoogleServiceProvider {
         }
         catch ( \Exception $e )
         {
-            echo "<pre>"; print_r($e->getMessage()); die;
+            abort('500', __($e->getMessage()));
+            //echo "<pre>"; print_r($e->getMessage()); die;
             $eventId = null;
         }
             
         return  $eventId;   
     }
     
+    public function updateEvent($eventId, $eventData) {
+        try {
+            $saveEvent = $this->getService()->events->update( $this->calendarId, $eventId, $this->getEventObj($eventData), ['sendNotifications' => true] );
+            
+            return $saveEvent->getId();
+        } catch (\Exception $e) {
+            abort('500', __($e->getMessage()));
+            $eventId = null;
+        }
+    }
+    
+    /**
+     * delete a calendar event
+     * @param string $eventId
+     */
+    public function deleteEvent($eventId) {
+        try {
+            $saveEvent = $this->getService()->events->delete( $this->calendarId, $eventId);
+        } catch (\Exception $e) {
+            //abort('500', __($e->getMessage()));
+            //$eventId = null;
+        }    
+    }
     /**
      * create google event data
      * @param array $eventData
      * @return \Google_Service_Calendar_Event
      */
     private function getEventObj($eventData) {
-        return new \Google_Service_Calendar_Event([
-                'summary' => $eventData['title'],
-                'description' => $eventData['description'],
-                'location' => $eventData['location'],
-                'start' => [ 'dateTime'	=> DateTimeHelper::getUtcTime($eventData['start_time']) ],
-                'end' => [ 'dateTime'	=> DateTimeHelper::getUtcTime($eventData['end_time']) ],
-                'attendees' => $eventData['joinee'],
-                'guestsCanSeeOtherGuests' => true,
-                'extendedProperties' => [
-                    'private' => [
-                            'BookneticAppointmentId' => $eventData['meeting_id']
-                    ]
+        $parameters = [
+            'summary' => $eventData['title'],
+            'description' => $eventData['description'],
+            'start' => ['dateTime'	=> DateTimeHelper::getUtcTime($eventData['start_time']) ],
+            'end' => [ 'dateTime'	=> DateTimeHelper::getUtcTime($eventData['end_time']) ],
+            'attendees' => $eventData['joinee'],
+            'guestsCanSeeOtherGuests' => true,
+            'extendedProperties' => [
+                'private' => [
+                        'BookneticAppointmentId' => $eventData['meeting_id']
                 ]
-        ]);
+            ]
+        ];
+        if(array_key_exists('location', $eventData)) {
+            $parameters['location'] = $eventData['location'];
+        }
+        
+        return new \Google_Service_Calendar_Event($parameters);
     }
     /**
      * 

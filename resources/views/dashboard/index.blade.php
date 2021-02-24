@@ -47,7 +47,7 @@
         <h6 class="mb-0">{{__('TimeZone')}}</h6>
     </div>
     <div class="col-sm-9 text-secondary">
-        {{ Auth::user()->timezone }}
+        {{ App\Models\UserMeta::getUserMeta(Auth::user()->id, 'timezone') }}
     </div>
 </div>
 <hr>
@@ -56,7 +56,7 @@
     <h6 class="mb-0">{{__('Personal Meeting ID')}}</h6>
     </div>
     <div class="col-sm-9 text-secondary">
-        {{App\Helpers\FormatHelper::meetingId(Auth::user()->personal_meet_id)}}
+        {{Format::meetingId(Auth::user()->personal_meet_id)}}
     </div>
 </div>
 <hr>

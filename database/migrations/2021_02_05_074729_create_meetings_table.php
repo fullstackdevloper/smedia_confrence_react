@@ -21,10 +21,12 @@ class CreateMeetingsTable extends Migration
             $table->string('title');
             $table->string('description');
             $table->string('start_time');
+            $table->string('password', 50);
             $table->string('meeting_duration');
             $table->integer('participant_count');
-            $table->timestamp('original_start_time')->nullable();
-            $table->timestamp('original_end_time')->nullable();
+            $table->string('original_start_time')->nullable();
+            $table->string('original_end_time')->nullable();
+            $table->string('calendar_event_id')->nullable();
             $table->boolean('is_started')->default(0);
             $table->boolean('is_ended')->default(0);
             $table->timestamps();

@@ -10,7 +10,7 @@
     <div class="form-group row">
         <label for="name" class="col-md-3 col-form-label">{{ __('Title') }}</label>
         <div class="col-md-9">
-            <input id="name" type="text" class="form-control @error('title') is-invalid @enderror" name="title" value="{{ old('title') }}" required autocomplete="name" autofocus>
+            <input id="title" type="text" class="form-control @error('title') is-invalid @enderror" name="title" value="{{ old('title') }}" autocomplete="title" autofocus>
 
             @error('title')
                 <span class="invalid-feedback" role="alert">
@@ -22,7 +22,7 @@
     <div class="form-group row">
         <label for="name" class="col-md-3 col-form-label">{{ __('Description') }}</label>
         <div class="col-md-9">
-            <textarea required autocomplete="description" autofocus class="form-control @error('description') is-invalid @enderror" name="description" id="description">{{ old('description') }}</textarea>
+            <textarea autocomplete="description" autofocus class="form-control @error('description') is-invalid @enderror" name="description" id="description">{{ old('description') }}</textarea>
             @error('description')
                 <span class="invalid-feedback" role="alert">
                     <strong>{{ $message }}</strong>
@@ -33,7 +33,7 @@
     <div class="form-group row">
         <label for="name" class="col-md-3 col-form-label">{{ __('Max Participants') }}</label>
         <div class="col-md-9">
-            <input id="max_participant" type="number" max="10" class="form-control @error('participant_count') is-invalid @enderror" name="participant_count" value="5" required autocomplete="participant_count" autofocus>
+            <input id="max_participant" type="number" class="form-control @error('participant_count') is-invalid @enderror" name="participant_count" value="{{ old('participant_count') }}" autocomplete="participant_count" autofocus>
 
             @error('participant_count')
                 <span class="invalid-feedback" role="alert">
@@ -43,96 +43,74 @@
         </div>
     </div>
     <div class="form-group row">
+        <label for="name" class="col-md-3 col-form-label">{{ __('Password') }}</label>
+        <div class="col-md-9">
+            <input id="name" type="text" class="col-md-2 form-control @error('password') is-invalid @enderror" name="password" value="{{ old('password', $password) }}" autocomplete="name" autofocus>
+
+            @error('password')
+                <span class="invalid-feedback" role="alert">
+                    <strong>{{ $message }}</strong>
+                </span>
+            @enderror
+        </div>
+    </div>
+    <div class="form-group row">
         <label for="name" class="col-md-3 col-form-label">{{ __('Time') }}</label>
         <div class="col-md-5">
-            <input id="meeting_date" type="text" class="datepicker form-control @error('description') is-invalid @enderror" name="time[date]" value="{{ old('description') }}" required autocomplete="name" autofocus readonly="readonly"   style="background:white;"/>
-
-            @error('description')
-                <span class="invalid-feedback" role="alert">
-                    <strong>{{ $message }}</strong>
-                </span>
-            @enderror
+            <input id="meeting_date" type="text" class="datepicker form-control @error('meeting_date.date') is-invalid @enderror" name="meeting_date[date]" value="{{ old('meeting_date.date') }}" autocomplete="name" autofocus readonly="readonly"   style="background:white;"/>
         </div>
         <div class="col-md-2">
-            <select class="form-control @error('description') is-invalid @enderror" name="time[time]">
-                <option>12:00</option>
-                <option>12:30</option>
-                <option>01:00</option>
-                <option>01:30</option>
-                <option>02:00</option>
-                <option>03:30</option>
-                <option>04:00</option>
-                <option>04:30</option>
-                <option>05:00</option>
-                <option>05:30</option>
-                <option>06:00</option>
-                <option>06:30</option>
-                <option>07:00</option>
-                <option>07:30</option>
-                <option>08:00</option>
-                <option>08:30</option>
-                <option>09:00</option>
-                <option>09:30</option>
-                <option>10:00</option>
-                <option>10:30</option>
-                <option>11:00</option>
-                <option>11:30</option>
+            <select class="form-control @error('meeting_date.time') is-invalid @enderror" name="meeting_date[time]">
+                @for( $i=strtotime("12:00") ; $i <= strtotime("23:30"); $i+=1800)
+                    <option value="{{date("h:i",$i)}}" {{old('meeting_date.time') == date("h:i",$i) ? "selected" : ""}}>{{date("h:i",$i)}}</option>
+                @endfor
             </select>
-
-            @error('description')
-                <span class="invalid-feedback" role="alert">
-                    <strong>{{ $message }}</strong>
-                </span>
-            @enderror
         </div>
         <div class="col-md-2">
-            <select class="form-control @error('description') is-invalid @enderror" name="time[format]">
+            <select class="form-control @error('meeting_date.format') is-invalid @enderror" name="meeting_date[format]">
                 <option value="am">AM</option>
                 <option value="pm">PM</option>
             </select>
-
-            @error('description')
-                <span class="invalid-feedback" role="alert">
-                    <strong>{{ $message }}</strong>
-                </span>
-            @enderror
         </div>
+        
+        @error('meeting_date.date')
+            <span class="invalid-feedback" role="alert">
+                <strong>{{ $message }}</strong>
+            </span>
+        @enderror
     </div>
     <div class="form-group row align-items-center flex-wrap">
         <label for="name" class="col-md-3 col-form-label">{{ __('Duration') }}</label>
-        <div class="col-md-2">
-            <select class="form-control @error('description') is-invalid @enderror" name="duration[hr]">
-                @for($i=0; $i<=24; $i++)
-                <option value="{{$i}}">{{$i}}</option>
-                @endfor
-            </select>
-
-            @error('description')
-                <span class="invalid-feedback" role="alert">
-                    <strong>{{ $message }}</strong>
-                </span>
-            @enderror
+        <div class="row col-md-9 align-items-center">
+            <div class="col-md-2">
+                <select class="form-control p-1 @error('duration.hr') is-invalid @enderror" name="duration[hr]">
+                    @for($i=0; $i<=24; $i++)
+                    <option value="{{$i}}">{{$i}}</option>
+                    @endfor
+                </select>
+            </div>
+            <span>hr</span>
+            <div class="col-md-2">
+                <select class="form-control p-1 @error('duration.min') is-invalid @enderror" name="duration[min]">
+                    @for($i=0; $i<60; $i+=10)
+                    <option value="{{$i}}">{{$i}}</option>
+                    @endfor
+                </select>
+            </div>
+            <span>min</span>
         </div>
-        <span>hr</span>
-        <div class="col-md-2">
-            <select class="form-control @error('description') is-invalid @enderror" name="duration[min]">
-                @for($i=0; $i<60; $i+=10)
-                <option value="{{$i}}">{{$i}}</option>
-                @endfor
-            </select>
-            @error('description')
-                <span class="invalid-feedback" role="alert">
-                    <strong>{{ $message }}</strong>
-                </span>
-            @enderror
-        </div>
-        <span>min</span>
+        @error('duration')
+            <span class="invalid-feedback" role="alert">
+                <strong>{{ $message }}</strong>
+            </span>
+        @enderror
     </div>
-    <div class="form-group row align-items-center flex-wrap">
-        <label for="name" class="col-md-3 col-form-label">{{ __('Guests') }}</label>
+    <div class="form-group row flex-wrap">
+        <label for="guests" class="col-md-3 col-form-label">{{ __('Guests') }}</label>
         <div class="col-md-9">
-            <input type="text" class="joinee_input form-control @error('joinee') is-invalid @enderror" name="joinee"> 
-            @error('description')
+            <input type="text" class="joinee_input form-control @error('guests') is-invalid @enderror" name="guests">
+            <p class="text-info"><small>{{__('Add emails seperated by comma(,)')}}</small></p>
+            @error('guests')
                 <span class="invalid-feedback" role="alert">
                     <strong>{{ $message }}</strong>
                 </span>
@@ -140,7 +118,7 @@
         </div>
     </div>
     <div class="form-group row mb-0">
-        <div class="col-md-6 offset-md-4">
+        <div class="col-md-12 text-center">
             <button type="submit" class="btn btn-primary">
                 {{ __('Save') }}
             </button>

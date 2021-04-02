@@ -12,9 +12,12 @@ class AwsServiceProvider extends ServiceProvider
      *
      * @return void
      */
-    public function register()
-    {
-        //
+    private $aws_key;
+    private $aws_secret;
+    
+      public function __construct() {
+        $this->aws_key = env('AWS_ACCESS_KEY_ID');
+        $this->aws_secret = env('AWS_SECRET_ACCESS_KEY');
     }
 
     /**
@@ -29,8 +32,8 @@ class AwsServiceProvider extends ServiceProvider
             'region'  => 'us-east-1',
             'scheme' =>'https',
             'credentials' => [
-                'key'    => 'AKIAVWJGL2M5VR5XFJFY',
-                'secret' => '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',
+                'key'    => $this->aws_key,
+                'secret' => $this->aws_secret,
             ],
         ]);
 
@@ -44,6 +47,31 @@ class AwsServiceProvider extends ServiceProvider
         } catch (Aws\S3\Exception\S3Exception $e) {
             echo "There was an error uploading the file.\n";
         }
+    }
+
+
+    public function viewImage($guid)
+    {
+        $s3 = new S3Client([
+            'version' => 'latest',
+            'region'  => 'us-east-1',
+            'scheme' =>'https',
+            'credentials' => [
+                'key'    => $this->aws_key,
+                'secret' => $this->aws_secret,
+            ],
+        ]);
+
+        $cmd = $s3->getCommand('GetObject', [
+            'Bucket' => 'smedia-callapp',
+            'Key'    => $guid
+        ]);
+
+//The period of availability
+        $request = $s3->createPresignedRequest($cmd, '+10 minutes');
+        $signedUrl = (string) $request->getUri();
+
+        return $signedUrl;
     }
 
 

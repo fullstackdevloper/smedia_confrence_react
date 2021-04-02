@@ -7,30 +7,17 @@
 
 <div class="row"> 
 @foreach($expertAll as $expertkey => $expertvalue)
-<?php
-$s3 = new  Aws\S3\S3Client([
-            'version' => 'latest',
-            'region'  => 'us-east-1',
-            'scheme' =>'https',
-            'credentials' => [
-                'key'    => 'AKIAVWJGL2M5VR5XFJFY',
-                'secret' => '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',
-            ],
-        ]);
 
-$cmd = $s3->getCommand('GetObject', [
-            'Bucket' => 'smedia-callapp',
-            'Key'    => $expertvalue->guid
-        ]);
-
-        //The period of availability
-        $request = $s3->createPresignedRequest($cmd, '+10 minutes');
-        $signedUrl = (string) $request->getUri();
+<?php 
+$imageView = new App\Providers\AwsServiceProvider();
+$guidData = $expertvalue->guid;
+$imageUrl = $imageView->viewImage($guidData);
 ?>
+
   <div class="media col-md-12">
     <div class="media-left media-middle">
         <a href="{{url('expert/view')}}/{{ $expertvalue->id }}" style="padding:0 10px;">
-          <img class="media-object" src="<?php echo $signedUrl ?>" style="max-width:200px;" alt="...">
+          <img class="media-object" src="<?php echo $imageUrl ?>" style="max-width:200px;" alt="...">
         </a>
     </div>
     <div class="media-body" style="padding:0 10px;">

@@ -73,29 +73,30 @@ class UsersController extends Controller
         $expertInsert = User::create($userData);
 
         $profileImage = $input['profile_picture'];
-
-        // $UserGuid = $expertInsert->guid;
+        $imageAdd = new AwsServiceProvider();
+        $UserGuid = $expertInsert->guid;
+        $upload = $imageAdd->upload($UserGuid,$profileImage);
         // $awsService = new AwsServiceProvider($UserGuid,$profileImage);
-          $s3 = new S3Client([
-            'version' => 'latest',
-            'region'  => 'us-east-1',
-            'scheme' =>'https',
-            'credentials' => [
-                'key'    => 'AKIAVWJGL2M5VR5XFJFY',
-                'secret' => '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',
-            ],
-        ]);
+        //   $s3 = new S3Client([
+        //     'version' => 'latest',
+        //     'region'  => 'us-east-1',
+        //     'scheme' =>'https',
+        //     'credentials' => [
+        //         'key'    => 'AKIAVWJGL2M5VR5XFJFY',
+        //         'secret' => '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',
+        //     ],
+        // ]);
 
-        try {
-            $file = $s3->putObject([
-                'Bucket' => 'smedia-callapp',
-                'Key'    => $expertInsert->guid,
-                'Body'   => fopen($profileImage, 'r'),
-                'ACL'    => 'private',
-            ]);
-        } catch (Aws\S3\Exception\S3Exception $e) {
-            echo "There was an error uploading the file.\n";
-        }
+        // try {
+        //     $file = $s3->putObject([
+        //         'Bucket' => 'smedia-callapp',
+        //         'Key'    => $expertInsert->guid,
+        //         'Body'   => fopen($profileImage, 'r'),
+        //         'ACL'    => 'private',
+        //     ]);
+        // } catch (Aws\S3\Exception\S3Exception $e) {
+        //     echo "There was an error uploading the file.\n";
+        // }
      
         // Mail::to($userData['email'])->send(new ExpertInvites($userData));
         // $request->request->add(['profile_image' => $profileImageSaveAsName]);

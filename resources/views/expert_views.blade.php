@@ -1,19 +1,17 @@
 @extends('layouts.app')
 
 @section('content')
-<!-- <?php
-
-// echo "<pre>";
-// print_r($User);
-// die();
-
-?> -->
+<?php 
+$imageView = new App\Providers\AwsServiceProvider();
+$guidData = $User->guid;
+$imageUrl = $imageView->viewImage($guidData);
+?>
 
 
 
 <div class="media">
   <div class="media-left media-middle">
-      <img class="media-object" src="<?php echo url("profile_images/".App\Models\UserMeta::getUserMeta($User->id, 'profile_image')); ?>" style="max-width:500px;" alt="...">
+      <img class="media-object" src="<?php echo $imageUrl; ?>" style="max-width:500px;" alt="...">
   </div>
   <div class="media-body">
     <h4 class="media-heading"><?php echo App\Models\UserMeta::getUserMeta($User->id, 'title');?></h4>

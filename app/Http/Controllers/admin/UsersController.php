@@ -13,6 +13,10 @@ use App\Mail\ExpertInvites;
 use Auth;
 use DB;
 use Illuminate\Support\Facades\Mail;
+use Illuminate\Support\Facades\Storage;
+use Aws\S3\S3Client;
+use App\Providers\AwsServiceProvider;
+
 class UsersController extends Controller
 {
     public function index() {
@@ -59,16 +63,6 @@ class UsersController extends Controller
             ->back()->withInput($request->input())
             ->withErrors($v->errors());
         }
-        $profileImage = $input['profile_picture'];
-        $profileImageSaveAsName = time() . Auth::id() . "-profile." . $profileImage->getClientOriginalExtension();
-        // $upload_path = 'profile_images/';
-        $upload_path       = public_path('/profile_images/');
-        $profile_image_url = $upload_path . $profileImageSaveAsName;
-        $success = $profileImage->move($upload_path, $profileImageSaveAsName);
-      
-
-
-
         $userData = [
             'name'                    => $input['name'],
             'email'                   => $input['email'],
@@ -77,8 +71,34 @@ class UsersController extends Controller
             'role'                    => 'expert'
         ];
         $expertInsert = User::create($userData);
+
+        $profileImage = $input['profile_picture'];
+
+        // $UserGuid = $expertInsert->guid;
+        // $awsService = new AwsServiceProvider($UserGuid,$profileImage);
+          $s3 = new S3Client([
+            'version' => 'latest',
+            'region'  => 'us-east-1',
+            'scheme' =>'https',
+            'credentials' => [
+                'key'    => 'AKIAVWJGL2M5VR5XFJFY',
+                'secret' => '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',
+            ],
+        ]);
+
+        try {
+            $file = $s3->putObject([
+                'Bucket' => 'smedia-callapp',
+                'Key'    => $expertInsert->guid,
+                'Body'   => fopen($profileImage, 'r'),
+                'ACL'    => 'private',
+            ]);
+        } catch (Aws\S3\Exception\S3Exception $e) {
+            echo "There was an error uploading the file.\n";
+        }
+     
         // Mail::to($userData['email'])->send(new ExpertInvites($userData));
-        $request->request->add(['profile_image' => $profileImageSaveAsName]);
+        // $request->request->add(['profile_image' => $profileImageSaveAsName]);
         foreach ($request->except('_token', 'name','password', 'email','profile_picture') as $key => $value) {
         $userMeta = [
             'user_id'         =>$expertInsert->id,
@@ -100,6 +120,25 @@ class UsersController extends Controller
         ];
         return view('admin.expert.expert_table',$data);
     }
+
+    public function expert_view_frontend()
+    {
+        $products = User::with('UserMeta')->where('role','expert')->orderBy('id', 'DESC')->get();
+        $data = [
+            'expertAll' => $products
+        ];
+        return view('expert',$data);
+    }
+
+    public function expert_singleUser_frontend($id)
+    {
+        $User = User::with('UserMeta')->where('id',$id)->first();
+        $data = [
+            'User' => $User
+        ];
+        return view('expert_views',$data);
+    }
+
 
     public function destroy($id)
     {

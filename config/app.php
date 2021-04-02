@@ -174,6 +174,7 @@ return [
         // App\Providers\BroadcastServiceProvider::class,
         App\Providers\EventServiceProvider::class,
         App\Providers\RouteServiceProvider::class,
+        // Aws\Laravel\AwsServiceProvider::class,
 
     ],
 
@@ -230,6 +231,7 @@ return [
         'DTime' => App\Helpers\DateTimeHelper::class,
         'Format' => App\Helpers\FormatHelper::class,
         'Routing' => App\Helpers\RoutingHelper::class,
+        // 'AWS' => Aws\Laravel\AwsFacade::class,
     ],
 
 ];

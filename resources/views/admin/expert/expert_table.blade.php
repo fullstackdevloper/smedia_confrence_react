@@ -87,7 +87,6 @@
   </div>
 
 
-<script src="https://unpkg.com/sweetalert/dist/sweetalert.min.js"></script>
 <script type="text/javascript">
  $('.delete-confirm').on('click', function (event) {
     event.preventDefault();

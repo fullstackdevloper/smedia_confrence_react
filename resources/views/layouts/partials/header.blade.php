@@ -19,6 +19,9 @@
                 <li class="nav-item">
                     <a class="nav-link" href="{{ route('join') }}">{{ __('Join Meeting') }}</a>
                 </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="{{ route('expert') }}">{{ __('Expert Team') }}</a>
+                </li>
                 @guest
                     @if (Route::has('login'))
                         <li class="nav-item">

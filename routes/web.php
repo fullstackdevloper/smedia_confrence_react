@@ -24,6 +24,9 @@ Route::get('/meet-me/{meeting_id}', [App\Http\Controllers\JoinController::class,
 Route::get('/join/{meeting_id?}', [App\Http\Controllers\JoinController::class, 'index'])->name('join');
 Route::get('/room/{room_id}', [App\Http\Controllers\JoinController::class, 'index'])->name('room');
 
+Route::get('/expert', [App\Http\Controllers\admin\UsersController::class, 'expert_view_frontend'])->name('expert');
+Route::get('/expert/view/{id}', [App\Http\Controllers\admin\UsersController::class, 'expert_singleUser_frontend'])->name('expert/view');
+
 Route::get('/dashboard', [App\Http\Controllers\DashboardController::class, 'index'])->name('dashboard');
 Route::get('/dashboard/google_signout', [App\Http\Controllers\DashboardController::class, 'google_signout'])->name('google_signout');
 Route::match(array('GET','POST'),'/dashboard/settings', [App\Http\Controllers\DashboardController::class, 'settings'])->name('settings');

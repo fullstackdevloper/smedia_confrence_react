@@ -45,14 +45,26 @@ class UserMeta extends Model
         }
     }
     
-    public static function getUserMeta($userId, $key = null, $single = true) {
-        $data = UserMeta::where([['user_id', '=', $userId], ['key', '=', $key]])->get()->first();
+    public static function getUserMeta($userId, $key = null) {
+        $where = [
+            ['user_id', '=', $userId]
+        ];
+        if($key) {
+            $where[] = ['key', '=', $key];
+        }
+
+        $data = UserMeta::where($where)->get();
+
+        if($key) {
+            $data = $data->first();
+        }
+
         if($data) {
-            if($single) {
+            if($key) {
                 return $data->value;
             }
             
-            return $data;
+            return $data->toArray();
         }
         
     }
